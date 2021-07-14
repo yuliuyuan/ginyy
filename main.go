@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github/ginyy/ginyy"
+	"ginyy"
 	"net/http"
 )
 

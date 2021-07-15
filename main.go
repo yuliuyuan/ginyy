@@ -1,24 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"ginyy"
 	"net/http"
 )
 
-type Engine struct{}
-
-
 func main() {
-	engine := ginyy.New()
-	engine.GET("/", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "URL.Path = %q\n", req.URL.Path)
+	e := ginyy.New()
+	e.GET("/", func(c *ginyy.Context) {
+		c.HTML(http.StatusOK, "<h1>hello salix</h1>")
 	})
-	engine.GET("/hello", func(w http.ResponseWriter, req *http.Request) {
-		for k, v := range req.Header {
-			fmt.Fprintf(w, "Header[%q] = %q\n", k, v)
-		}
+
+	e.GET("/hello", func(c *ginyy.Context) {
+		c.HTML(http.StatusOK, "<h1>hello test</h1>")
 	})
-	engine.Run(":9999")
+	e.Run(":9999")
 }
 

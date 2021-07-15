@@ -1,25 +1,24 @@
 package ginyy
 
 import (
-	"fmt"
 	"net/http"
 )
 
-type HandlerFunc func(w http.ResponseWriter, req * http.Request)
+type HandlerFunc func(ctx *Context)
+//type HandlerFunc func(w http.ResponseWriter, req * http.Request)
 
 //Engine implement the interface of ServeHTTP
 type Engine struct{
-	router map[string]HandlerFunc
+	router *router
 }
 
 //
 func New() *Engine{
-	return &Engine{router: make( map[string]HandlerFunc )}
+	return &Engine{router: newRouter() }
 }
 
 func (engine *Engine) addRoute(method string, pattern string, handlerFunc HandlerFunc) {
-	key := method + "-" + pattern
-	engine.router[key] = handlerFunc
+	engine.router.addRouter(method, pattern, handlerFunc)
 }
 
 func (engine *Engine) GET(pattern string, handlerFunc HandlerFunc){
@@ -35,10 +34,6 @@ func (engine *Engine) Run(addr string) (err error) {
 }
 
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request){
-	key := req.Method + "-" + req.URL.Path
-	if HandlerFunc, ok := engine.router[key]; ok{
-		HandlerFunc(w, req)
-	} else {
-		fmt.Fprintf(w, "404 NOT FOUND: %s\n", req.URL)
-	}
+	c := newContext(w, req)
+	engine.router.handle(c)
 }
